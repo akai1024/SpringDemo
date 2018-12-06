@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.LinkedList;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,11 +45,11 @@ public class ChatController {
 	}
 
 	@RequestMapping("/speak")
-	public LinkedList<ChatMessage> playerSpeak(@RequestParam("msg") String msg, HttpServletRequest request) {
-		if (msg == null || msg.isEmpty() || !PlayerController.isLogin(request)) {
+	public LinkedList<ChatMessage> playerSpeak(@RequestParam("msg") String msg, HttpSession session) {
+		if (msg == null || msg.isEmpty() || !PlayerController.isLogin(session)) {
 			return chatRecord;
 		}
-		String name = PlayerController.getPlayer(request).getName();
+		String name = PlayerController.getPlayer(session).getName();
 		addChatRecord(name, msg);
 		return chatRecord;
 	}

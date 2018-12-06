@@ -98,12 +98,12 @@ public class PlayerController {
 		return player;
 	}
 	
-	public static boolean isLogin(HttpServletRequest request) {
-		return request.getSession().getAttribute(SESSION_ACC_PARAM) != null;
+	public static boolean isLogin(HttpSession session) {
+		return session.getAttribute(SESSION_ACC_PARAM) != null;
 	}
 	
-	public static Player getPlayer(HttpServletRequest request) {
-		return (Player) request.getSession().getAttribute(SESSION_ACC_PARAM);
+	public static Player getPlayer(HttpSession session) {
+		return (Player) session.getAttribute(SESSION_ACC_PARAM);
 	}
 
 	@RequestMapping("/createRobot")
