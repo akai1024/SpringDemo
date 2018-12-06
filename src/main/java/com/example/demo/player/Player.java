@@ -16,6 +16,18 @@ public class Player implements Serializable {
 	private int level;
 
 	
+	public String toString() {
+		return name;
+	}
+	
+	@Override
+	public boolean equals(Object object) {
+		if(object instanceof Player) {
+			return this.account.equals(((Player)object).getAccount());
+		}
+		return false;
+	}
+	
 	public String getAccount() {
 		return account;
 	}
@@ -39,8 +51,5 @@ public class Player implements Serializable {
 	public void setLevel(int level) {
 		this.level = level;
 	}
-	
-	public String toString() {
-		return name;
-	}
+
 }

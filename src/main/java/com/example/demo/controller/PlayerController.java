@@ -82,7 +82,8 @@ public class PlayerController {
 		Player player = players.get(acc);
 		if (player != null) {
 			HttpSession session = request.getSession();
-			if (session.getAttribute(SESSION_ACC_PARAM) == null) {
+			Player playerInSession = (Player) session.getAttribute(SESSION_ACC_PARAM);
+			if (playerInSession == null || !player.equals(playerInSession)) {
 				session.setAttribute(SESSION_ACC_PARAM, player);
 				
 				// 如果已經登入過
