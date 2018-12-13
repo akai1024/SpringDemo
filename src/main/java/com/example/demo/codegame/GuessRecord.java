@@ -1,6 +1,13 @@
 package com.example.demo.codegame;
 
-public class GuessRecord {
+import java.io.Serializable;
+
+public class GuessRecord implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6263523161205235191L;
 
 	private String guess;
 
