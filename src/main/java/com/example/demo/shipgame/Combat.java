@@ -2,9 +2,10 @@ package com.example.demo.shipgame;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
+import com.example.demo.player.LevelCalculator;
 import com.example.demo.player.Player;
-import com.google.gson.Gson;
 
 /**
  * 戰事
@@ -14,12 +15,15 @@ import com.google.gson.Gson;
  */
 public class Combat {
 
-	private Gson gson = new Gson();
+//	private Gson gson = new Gson();
 
 	private static final int FIELD_LENGTH = 10;
 	private static final int FIELD_WIDTH = 10;
 	private static final int COMMANDER_SIZE = 2;
 	private static final int DEPLOYMENT_SIZE = 3;
+
+	private static final int WINNER_EXP = 25;
+	private static final int PARTICIPATION_EXP = 10;
 
 	/** 當前回合狀態 */
 	private Phase currentPhase = Phase.MATCHING;
@@ -48,6 +52,7 @@ public class Combat {
 	 * 切換回合
 	 */
 	private void switchPhase(Phase phase) {
+		System.out.println("change phase from " + currentPhase.name() + " to " + phase.name());
 		this.currentPhase = phase;
 	}
 
@@ -64,6 +69,7 @@ public class Combat {
 		}
 
 		commanders.add(player);
+		createCommanderField(player);
 
 		// 人數足夠就轉移到部屬階段
 		if (commanders.size() >= COMMANDER_SIZE) {
@@ -76,28 +82,39 @@ public class Combat {
 	/**
 	 * 初始化戰場
 	 */
-	public void initBattleField() {
-		if (!currentPhase.equals(Phase.CLEAN_FIELD)) {
-			return;
+	public boolean initBattleField() {
+		if (!currentPhase.equals(Phase.FINISH)) {
+			return false;
 		}
 
 		// 清空
 		battleFied.clear();
 		commanderShips.clear();
+		currentCommander = new Random().nextInt(COMMANDER_SIZE);
 
 		// 針對指揮官數量建立各方部屬戰場
 		for (Player commander : commanders) {
-			HashMap<String, OwnGrid> field = new HashMap<>();
-			for (int x = 0; x < FIELD_LENGTH; x++) {
-				for (int y = 0; y < FIELD_WIDTH; y++) {
-					OwnGrid grid = new OwnGrid();
-					grid.setX(x);
-					grid.setY(y);
-					field.put(grid.toString(), grid);
-				}
-			}
-			battleFied.put(commander, field);
+			createCommanderField(commander);
 		}
+		
+		switchPhase(Phase.DEPLOYMENT);
+		return true;
+	}
+
+	/**
+	 * 建立指揮官的場地
+	 */
+	private void createCommanderField(Player commander) {
+		HashMap<String, OwnGrid> field = new HashMap<>();
+		for (int x = 0; x < FIELD_LENGTH; x++) {
+			for (int y = 0; y < FIELD_WIDTH; y++) {
+				OwnGrid grid = new OwnGrid();
+				grid.setX(x);
+				grid.setY(y);
+				field.put(grid.toString(), grid);
+			}
+		}
+		battleFied.put(commander, field);
 	}
 
 	/**
@@ -131,7 +148,9 @@ public class Combat {
 			return false;
 		}
 
-		DeployMessage message = gson.fromJson(deployment, DeployMessage.class);
+//		DeployMessage message = gson.fromJson(deployment, DeployMessage.class);
+		DeployMessage message = new DeployMessage();
+		message.parseByText(deployment);
 		ArrayList<Grid> grids = message.getDeployment();
 		if (grids == null) {
 			return false;
@@ -189,7 +208,9 @@ public class Combat {
 		}
 
 		// 砲火位置
-		Grid fireLocation = gson.fromJson(location, Grid.class);
+//		Grid fireLocation = gson.fromJson(location, Grid.class);
+		Grid fireLocation = new Grid();
+		fireLocation.parseByText(location);
 		if (!isValidGrid(fireLocation)) {
 			return false;
 		}
@@ -212,6 +233,7 @@ public class Combat {
 			// 目標輸了
 			if (ships <= 0) {
 				switchPhase(Phase.FINISH);
+				addExpToCommanders(player);
 			}
 		}
 
@@ -229,4 +251,33 @@ public class Combat {
 		}
 	}
 
+	/**
+	 * 加經驗值
+	 */
+	private void addExpToCommanders(Player winner) {
+		System.out.println("winner is " + winner);
+
+		for (Player commander : commanders) {
+			// 贏家經驗
+			if (commander.equals(winner)) {
+				LevelCalculator.addPlayerExp(commander, WINNER_EXP);
+			}
+			// 其餘玩家經驗
+			else {
+				LevelCalculator.addPlayerExp(commander, PARTICIPATION_EXP);
+			}
+		}
+	}
+
+	/**
+	 * 取得所有指揮官的布局
+	 */
+	public String getAllCommanderFields() {
+		if(currentPhase.equals(Phase.FINISH)) {
+			return "wait for complete";	
+		}
+		
+		return "still in battle...";
+	}
+	
 }

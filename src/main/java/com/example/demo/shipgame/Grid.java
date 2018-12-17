@@ -20,6 +20,16 @@ public class Grid {
 		return false;
 	}
 	
+	public void parseByText(String text) {
+		if(text == null) {
+			return;
+		}
+		
+		String[] coordinate = text.split(":");
+		x = Integer.valueOf(coordinate[0]);
+		y = Integer.valueOf(coordinate[1]);
+	}
+	
 	public int getX() {
 		return x;
 	}

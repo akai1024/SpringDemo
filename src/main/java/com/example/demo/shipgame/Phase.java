@@ -6,7 +6,6 @@ package com.example.demo.shipgame;
 public enum Phase {
 
 	MATCHING,
-	CLEAN_FIELD,
 	DEPLOYMENT,
 	BATTLE,
 	FINISH
