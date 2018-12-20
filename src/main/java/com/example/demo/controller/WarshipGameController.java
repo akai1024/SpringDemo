@@ -49,7 +49,6 @@ public class WarshipGameController {
 			for (Player commander : combat.getCommanders()) {
 				combatMatching.put(commander, combat);
 			}
-			// 這裡要測試combatMatching的指標會不會遺失
 			waitingRoom.removeFirst();
 		}
 		return "combat start!";
