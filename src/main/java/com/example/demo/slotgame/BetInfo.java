@@ -15,6 +15,13 @@ public class BetInfo {
 	
 	/** 幣值比 */
 	private BigDecimal gainRate = BigDecimal.ONE;
+	
+	/**
+	 * 取得總代幣(不包含幣值比)
+	 */
+	public int getTotalToken() {
+		return singleBetToken * betCount;
+	}
 
 	public int getBetCount() {
 		return betCount;

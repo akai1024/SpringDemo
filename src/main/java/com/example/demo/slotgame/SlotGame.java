@@ -73,7 +73,6 @@ public abstract class SlotGame {
 	
 	
 	public static void main(String[] args) {
-		Random random = new Random();
 		int symbolSize = 6;
 		int columns = 5;
 		int rows = 3;
@@ -103,17 +102,11 @@ public abstract class SlotGame {
 		minConnectSize.put(7, 2);
 		minConnectSize.put(8, 3);
 
-		ArrayList<ArrayList<Integer>> ribbons = new ArrayList<>();
-		for (int col = 0; col < columns; col++) {
-			int ribbonSize = random.nextInt(20) + rows;
-			ArrayList<Integer> ribbon = new ArrayList<>();
-			for (int i = 0; i < ribbonSize; i++) {
-				ribbon.add(random.nextInt(symbolSize + 1) + 1);
-			}
-			ribbons.add(ribbon);
-		}
-
-		RibbonBase ribbonBase = new RibbonBase(columns, rows, ribbons);
+		
+		ArrayList<Integer> symbolList = new ArrayList<>();
+		symbolList.addAll(bingoSymbols);
+		symbolList.addAll(wildSymbols);
+		RibbonBase ribbonBase = new RibbonBase(columns, rows, randomRibbons(columns, rows, symbolList));
 		BingoCalculator calculator = new BingoCalculator(columns, rows);
 		calculator.setBingoSymbols(bingoSymbols);
 		calculator.setBingoLineIndexes(bingoLineIndexes);
@@ -156,6 +149,21 @@ public abstract class SlotGame {
 //			System.out.println(bingoWays);
 //		}
 
+	}
+	
+	public static ArrayList<ArrayList<Integer>> randomRibbons(int columns, int rows, ArrayList<Integer> symbolList) {
+		Random random = new Random();
+		ArrayList<ArrayList<Integer>> ribbons = new ArrayList<>();
+		for (int col = 0; col < columns; col++) {
+			int ribbonSize = random.nextInt(20) + rows;
+			ArrayList<Integer> ribbon = new ArrayList<>();
+			for (int i = 0; i < ribbonSize; i++) {
+				int idxInSymbol = random.nextInt(symbolList.size());
+				ribbon.add(symbolList.get(idxInSymbol));
+			}
+			ribbons.add(ribbon);
+		}
+		return ribbons;
 	}
 	
 }
