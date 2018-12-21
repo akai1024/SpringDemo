@@ -12,20 +12,28 @@ import com.example.demo.slotgame.bingo.Way;
  */
 public class RibbonBase {
 
+	/** 矩形最大輪數 */
 	private int columns;
 
+	/** 矩形最大行數 */
 	private int rows;
 
+	/** 一般中獎symbol */
 	private ArrayList<Integer> bingoSymbols;
 
+	/** wild symbol */
 	private ArrayList<Integer> wildSymbols;
 
+	/** 最小連線數 */
 	private HashMap<Integer, Integer> minConnectSize;
 
+	/** 排列帶 */
 	private ArrayList<ArrayList<Integer>> ribbons;
 
+	/** 隨機 */
 	private Random random;
 
+	/** 中獎線位置 */
 	private ArrayList<ArrayList<Integer>> bingoLineIndexes;
 
 	/**
