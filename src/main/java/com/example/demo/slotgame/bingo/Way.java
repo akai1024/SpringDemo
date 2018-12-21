@@ -2,6 +2,8 @@ package com.example.demo.slotgame.bingo;
 
 import java.util.ArrayList;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * 中獎Way
  */
@@ -17,6 +19,12 @@ public class Way {
 	public String toString() {
 		int connect = bingoIndexs == null ? 0 : bingoIndexs.size();
 		return symbol + "X" + connect + bingoIndexs;
+	}
+
+	@JsonIgnore
+	public String getBingoKey() {
+		int connect = bingoIndexs == null ? 0 : bingoIndexs.size();
+		return symbol + "_" + connect;
 	}
 
 	public int getSymbol() {

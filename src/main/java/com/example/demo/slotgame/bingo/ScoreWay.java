@@ -4,6 +4,15 @@ public class ScoreWay extends Way {
 
 	private int scoreToken;
 
+	public ScoreWay() {
+
+	}
+
+	public ScoreWay(Way way) {
+		setSymbol(way.getSymbol());
+		setBingoIndexs(way.getBingoIndexs());
+	}
+
 	@Override
 	public String toString() {
 		return "(" + scoreToken + ")" + super.toString();
