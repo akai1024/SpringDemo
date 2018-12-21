@@ -9,9 +9,15 @@ public class Way {
 
 	/** 圖標 */
 	private int symbol;
-	
+
 	/** 中獎位置 */
 	private ArrayList<Integer> bingoIndexs;
+
+	@Override
+	public String toString() {
+		int connect = bingoIndexs == null ? 0 : bingoIndexs.size();
+		return symbol + "X" + connect + bingoIndexs;
+	}
 
 	public int getSymbol() {
 		return symbol;
@@ -28,5 +34,5 @@ public class Way {
 	public void setBingoIndexs(ArrayList<Integer> bingoIndexs) {
 		this.bingoIndexs = bingoIndexs;
 	}
-	
+
 }

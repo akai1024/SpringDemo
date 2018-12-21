@@ -19,7 +19,7 @@ public class RibbonBase {
 	private ArrayList<Integer> bingoSymbols;
 
 	private ArrayList<Integer> wildSymbols;
-	
+
 	private HashMap<Integer, Integer> minConnectSize;
 
 	private ArrayList<ArrayList<Integer>> ribbons;
@@ -28,6 +28,9 @@ public class RibbonBase {
 
 	private ArrayList<ArrayList<Integer>> bingoLineIndexes;
 
+	/**
+	 * 建構，提供盤面矩形大小與排列帶
+	 */
 	public RibbonBase(int columns, int rows, ArrayList<ArrayList<Integer>> ribbonsInput) {
 		if (columns <= 0 || rows <= 0 || ribbonsInput == null) {
 			throw new IllegalArgumentException();
@@ -48,7 +51,6 @@ public class RibbonBase {
 			}
 			ribbons.add(ribbon);
 		}
-
 	}
 
 	/**
@@ -64,7 +66,7 @@ public class RibbonBase {
 	public void setWildSymbols(ArrayList<Integer> wildSymbols) {
 		this.wildSymbols = wildSymbols;
 	}
-	
+
 	/**
 	 * 設定中獎最小連線數
 	 */
@@ -93,7 +95,9 @@ public class RibbonBase {
 			int endIdx = startIdx + rows;
 			int fillSize = 0;
 
+			// 到達排列帶尾端
 			if (endIdx > ribbonSize) {
+				// 從頭補symbol
 				fillSize = endIdx - ribbonSize;
 				endIdx = ribbonSize;
 			}
@@ -115,8 +119,8 @@ public class RibbonBase {
 		if (bingoLineIndexes == null || bingoLineIndexes.size() <= 0) {
 			return lines;
 		}
-		
-		if(minConnectSize == null || minConnectSize.size() <= 0) {
+
+		if (minConnectSize == null || minConnectSize.size() <= 0) {
 			return lines;
 		}
 
@@ -152,7 +156,7 @@ public class RibbonBase {
 					connect++;
 				} else if (isWildSymbol || isWildLead) {
 					// 若此symbol非wild，替換領前的symbol
-					if(isWildLead && !isWildSymbol) {
+					if (isWildLead && !isWildSymbol) {
 						bingoSymbol = symbol;
 						isWildLead = false;
 					}
@@ -163,7 +167,7 @@ public class RibbonBase {
 			}
 
 			// 有達到最小連線數
-			if (connect >= minConnectSize.get(bingoSymbol)) {
+			if (minConnectSize.containsKey(bingoSymbol) && connect >= minConnectSize.get(bingoSymbol)) {
 				Line line = new Line();
 				line.setSymbol(bingoSymbol);
 				line.setConnect(connect);
@@ -178,42 +182,115 @@ public class RibbonBase {
 	/**
 	 * 取得中獎way
 	 */
-	public ArrayList<Way> getBingoWays(ArrayList<Integer> screen, int minConnect) {
+	public ArrayList<Way> getBingoWays(ArrayList<Integer> screen, boolean isWildWay) {
 		ArrayList<Way> ways = new ArrayList<>();
-
-//		for (int rowAtFirstCol = 0; rowAtFirstCol < rows; rowAtFirstCol++) {
-//			int symbol = screen.get(rowAtFirstCol);
-//
-//			int connect = 1;
-//			int waySize = 1;
-//			for (int col = 1; col < columns; col++) {
-//				int symbolCount = 0;
-//				int fromIndex = col * rows;
-//				int toIndex = fromIndex + rows;
-//				
-//				for (int idx = fromIndex; idx < toIndex; idx++) {
-//					int symbolInCol = screen.get(idx);
-//					if (symbolInCol == symbol) {
-//						symbolCount++;
-//					}
-//				}
-//
-//				// 該輪獲得的symbol數量
-//				if (symbolCount > 0) {
-//					waySize *= symbolCount;
-//					connect++;
-//				} else {
-//					break;
-//				}
-//			}
-//			
-//			if(connect >= minConnect) {
-//				
-//			}
-//
-//		}
-
+		findBingoWays(ways, screen, false);
+		if(isWildWay) {
+			findBingoWays(ways, screen, true);	
+		}
 		return ways;
+	}
+
+	/**
+	 * 尋找中獎way
+	 */
+	private void findBingoWays(ArrayList<Way> ways, ArrayList<Integer> screen, boolean isWildWay) {
+		ArrayList<Integer> checkSymbols = isWildWay ? wildSymbols : bingoSymbols;
+
+		// 以symbol去尋找中獎機會
+		for (int symbol : checkSymbols) {
+			if (minConnectSize == null || !minConnectSize.containsKey(symbol)) {
+				continue;
+			}
+
+			int minConnect = minConnectSize.get(symbol);
+			ArrayList<ArrayList<Integer>> bingoIndexes = new ArrayList<>();
+			ArrayList<Integer> colIndex = new ArrayList<>();
+			HashMap<Integer, Integer> search = new HashMap<>();
+
+			// 每一個idx尋找
+			boolean isAllWild = true;
+			for (int idx = 0; idx < screen.size(); idx++) {
+				int col = idx / rows;
+				int symbolOnScreen = screen.get(idx);
+				// 與當前尋找的symbol相同
+				if (symbolOnScreen == symbol) {
+					colIndex.add(idx);
+					isAllWild = false;
+				}
+				// 或是wild
+				else if (!isWildWay && wildSymbols != null && wildSymbols.contains(symbolOnScreen)) {
+					colIndex.add(idx);
+				}
+
+				// 換輪
+				if ((idx + 1) % rows == 0) {
+					// 本輪都沒中
+					if (colIndex.size() == 0) {
+						break;
+					}
+					// 有中
+					else {
+						bingoIndexes.add(new ArrayList<>(colIndex));
+						colIndex.clear();
+						search.put(col, 0);
+					}
+				}
+			}
+
+			// 超過最小連線數而且不能全部都是wild
+			if (bingoIndexes.size() >= minConnect && !isAllWild) {
+				ArrayList<ArrayList<Integer>> indexes = transferCombination(search, bingoIndexes);
+				for (ArrayList<Integer> index : indexes) {
+					Way way = new Way();
+					way.setSymbol(symbol);
+					way.setBingoIndexs(index);
+					ways.add(way);
+				}
+			}
+		}
+	}
+
+	/**
+	 * 把中獎位置轉出所有組合
+	 */
+	private static ArrayList<ArrayList<Integer>> transferCombination(HashMap<Integer, Integer> search,
+			ArrayList<ArrayList<Integer>> indexes) {
+		ArrayList<ArrayList<Integer>> result = new ArrayList<>();
+		boolean isLastColCarry = false;
+		while (!isLastColCarry) {
+			ArrayList<Integer> idxs = new ArrayList<>();
+			// 需要進位的輪
+			int carryCol = -1;
+			for (int col = 0; col < indexes.size(); col++) {
+
+				int idxOfSearch = search.get(col);
+				ArrayList<Integer> colIdxs = indexes.get(col);
+				idxs.add(colIdxs.get(idxOfSearch));
+
+				if (col == 0) {
+					idxOfSearch++;
+				} else if (col == carryCol) {
+					idxOfSearch++;
+				}
+
+				// 超過該輪可提供的位置大小，進行進位
+				if (idxOfSearch >= colIdxs.size()) {
+					idxOfSearch = 0;
+					if (col == indexes.size() - 1) {
+						isLastColCarry = true;
+					} else {
+						carryCol = col + 1;
+					}
+				}
+				// 更新指標
+				search.put(col, idxOfSearch);
+			}
+			// 加入彙整過的位置
+			result.add(idxs);
+		}
+
+		return result;
 	}
 
 	public static void main(String[] args) {
@@ -230,7 +307,7 @@ public class RibbonBase {
 		ArrayList<Integer> wildSymbols = new ArrayList<>();
 		wildSymbols.add(7);
 		wildSymbols.add(8);
-		
+
 		ArrayList<ArrayList<Integer>> bingoLineIndexes = new ArrayList<>();
 		ArrayList<Integer> line1 = new ArrayList<>();
 		line1.add(0);
@@ -241,12 +318,12 @@ public class RibbonBase {
 		bingoLineIndexes.add(line1);
 
 		HashMap<Integer, Integer> minConnectSize = new HashMap<>();
-		for(int symbol : bingoSymbols) {
+		for (int symbol : bingoSymbols) {
 			minConnectSize.put(symbol, 3);
 		}
 		minConnectSize.put(7, 2);
 		minConnectSize.put(8, 3);
-		
+
 		ArrayList<ArrayList<Integer>> ribbons = new ArrayList<>();
 		for (int col = 0; col < columns; col++) {
 			int ribbonSize = random.nextInt(20) + rows;
@@ -263,39 +340,42 @@ public class RibbonBase {
 		ribbonBase.setWildSymbols(wildSymbols);
 		ribbonBase.setMinConnectSize(minConnectSize);
 
-//		for (int col = 0; col < 50; col++) {
-//			ArrayList<Integer> screen = ribbonBase.getRandomScreen();
-//			ArrayList<Line> bingoLines = ribbonBase.getBingoLines(screen, minConnect);
-//			if (bingoLines.size() > 0) {
-//				System.out.println(screen);
+		for (int col = 0; col < 50; col++) {
+			ArrayList<Integer> screen = ribbonBase.getRandomScreen();
+//			ArrayList<Line> bingoLines = ribbonBase.getBingoLines(screen);
+			ArrayList<Way> bingoWays = ribbonBase.getBingoWays(screen, true);
+			if (bingoWays.size() > 0) {
+				System.out.println(screen);
 //				System.out.println(bingoLines);
-//			}
-//
-//		}
-		
-		ArrayList<Integer> screen = new ArrayList<>();
-		screen.add(8);//0
-		screen.add(1);//1
-		screen.add(1);//2
-		screen.add(7);//3
-		screen.add(1);//4
-		screen.add(1);//5
-		screen.add(8);//6
-		screen.add(1);//7
-		screen.add(1);//8
-		screen.add(7);//9
-		screen.add(1);//10
-		screen.add(1);//11
-		screen.add(1);//12
-		screen.add(1);//13
-		screen.add(1);//14
-		ArrayList<Line> bingoLines = ribbonBase.getBingoLines(screen);
-		if (bingoLines.size() > 0) {
-			System.out.println(screen);
-			System.out.println(bingoLines);
+				System.out.println(bingoWays);
+			}
+
 		}
-		
+
+//		ArrayList<Integer> screen = new ArrayList<>();
+//		screen.add(8);// 0
+//		screen.add(1);// 1
+//		screen.add(1);// 2
+//		screen.add(7);// 3
+//		screen.add(1);// 4
+//		screen.add(1);// 5
+//		screen.add(8);// 6
+//		screen.add(1);// 7
+//		screen.add(1);// 8
+//		screen.add(7);// 9
+//		screen.add(7);// 10
+//		screen.add(7);// 11
+//		screen.add(1);// 12
+//		screen.add(1);// 13
+//		screen.add(1);// 14
+//		ArrayList<Line> bingoLines = ribbonBase.getBingoLines(screen);
+//		ArrayList<Way> bingoWays = ribbonBase.getBingoWays(screen);
+//		if (bingoLines.size() > 0) {
+//			System.out.println(screen);
+//			System.out.println(bingoLines);
+//			System.out.println(bingoWays);
+//		}
+
 	}
 
 }
-
