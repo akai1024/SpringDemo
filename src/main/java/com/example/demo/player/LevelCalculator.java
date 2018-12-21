@@ -13,21 +13,20 @@ public class LevelCalculator {
 		}
 
 		int beforeLevel = player.getLevel();
-		int afterLevel = beforeLevel + exp / EXP_PER_LEVEL;
-
-		int expInLevel = exp % EXP_PER_LEVEL;
 		int beforeExp = player.getExperience();
-		int afterExp = beforeExp + expInLevel;
-
+		int afterExp = beforeExp + exp;
+		int addLevel = 0;
+		while (afterExp >= EXP_PER_LEVEL) {
+			addLevel ++;
+			afterExp -= EXP_PER_LEVEL;
+		}
+		int afterLevel = beforeLevel + addLevel;
+		
 		player.setLevel(afterLevel);
 		player.setExperience(afterExp);
 
-		System.out.println(
-				player.toString() + " add exp:" + exp + 
-				" from level/exp:" +
-				beforeLevel + "/" + beforeExp +
-				" to " +
-				afterLevel + "/" + afterExp);
+		System.out.println(player.toString() + " add exp:" + exp + " from level/exp:" + beforeLevel + "/" + beforeExp
+				+ " to " + afterLevel + "/" + afterExp);
 	}
 
 }
