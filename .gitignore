@@ -4,6 +4,8 @@
 /save/*
 /logs/*
 
+/src/main/java/com/example/demo/TestMain.java
+
 ### STS ###
 .apt_generated
 .classpath
