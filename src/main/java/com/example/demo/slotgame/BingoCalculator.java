@@ -162,8 +162,11 @@ public class BingoCalculator {
 			ArrayList<Integer> colIndex = new ArrayList<>();
 			HashMap<Integer, Integer> search = new HashMap<>();
 
-			// 每一個idx尋找
+			// 是否每個中獎位置都是wild
+			// 如果是針對wild way計算時，wild本身不存在(計算wild1連線時不會因為wild2而獲得連線，反之亦然)
 			boolean isAllWild = true;
+			
+			// 每一個idx尋找
 			for (int idx = 0; idx < screen.size(); idx++) {
 				int col = idx / rows;
 				int symbolOnScreen = screen.get(idx);
