@@ -27,7 +27,7 @@ public class WeightSelection<T> {
 			return null;
 		}
 		
-		int rndKey = random.nextInt(totalWeight);
+		int rndKey = random.nextInt(totalWeight) + 1;
 		int ceilingKey = container.ceilingKey(rndKey);
 		if(isRemoveAfterSelect) {
 			totalWeight -= ceilingKey;
