@@ -26,28 +26,56 @@ public enum PokerRank {
 		this.order = order;
 		this.number = number;
 	}
-	
+
 	public int compareOrder(PokerRank pokerRank) {
-		if(pokerRank == null) {
+		if (pokerRank == null) {
 			return 0;
 		}
-		
-		if(order < pokerRank.order) {
+
+		if (order < pokerRank.order) {
 			return 1;
-		}
-		else if(order > pokerRank.order) {
+		} else if (order > pokerRank.order) {
 			return -1;
 		}
-		
+
 		return 0;
 	}
-	
+
 	public int compareNumber(PokerRank pokerRank) {
-		if(pokerRank == null) {
+		if (pokerRank == null) {
 			return 0;
 		}
-		
+
 		return Integer.compare(number, pokerRank.number);
+	}
+
+	public int getOrder() {
+		return order;
+	}
+
+	public int getNumber() {
+		return number;
+	}
+
+	public PokerRank getNexRank() {
+		switch (this) {
+		case A:	return II;
+		case II: return III;
+		case III: return IV;
+		case IV: return V;
+		case V: return VI;
+		case VI: return VII;
+		case VII: return VIII;
+		case VIII: return IX;
+		case IX: return X;
+		case X: return JACK;
+		case JACK: return QUEEN;
+		case QUEEN: return KING;
+		case KING: return A;
+
+		default:
+			return null;
+		}
 	}
 
 }

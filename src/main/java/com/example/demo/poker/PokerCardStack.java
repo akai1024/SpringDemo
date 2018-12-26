@@ -40,6 +40,10 @@ public class PokerCardStack {
 		Collections.shuffle(cards);
 	}
 
+	public void sort() {
+		Collections.sort(cards);
+	}
+
 	public int size() {
 		return cards.size();
 	}

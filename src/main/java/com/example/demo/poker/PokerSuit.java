@@ -52,5 +52,13 @@ public enum PokerSuit {
 	public boolean isRed() {
 		return color == COLOR_RED;
 	}
+
+	public int getOrder() {
+		return order;
+	}
+
+	public int getColor() {
+		return color;
+	}
 	
 }
