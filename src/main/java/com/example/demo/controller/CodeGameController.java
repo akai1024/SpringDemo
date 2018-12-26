@@ -8,6 +8,8 @@ import java.util.HashSet;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +26,8 @@ import com.example.demo.codegame.GuessRecord;
 @RestController
 @RequestMapping("/codeGame")
 public class CodeGameController {
+
+	private static final Logger logger = LoggerFactory.getLogger(CodeGameController.class);
 
 	private static final int CODE_SIZE = 4;
 	private ArrayList<Integer> currentCode = new ArrayList<>();
@@ -60,7 +64,10 @@ public class CodeGameController {
 		for (int i = 0; i < CODE_SIZE; i++) {
 			currentCode.add(codeList.get(i));
 		}
-		System.out.println("current code is " + currentCode.toString());
+
+		if (logger.isInfoEnabled()) {
+			logger.info("current code is " + currentCode.toString());
+		}
 	}
 
 	@RequestMapping("/commandList")
