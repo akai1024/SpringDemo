@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 /**
  * 撲克牌判斷邏輯
  */
-public class PokerJudgement {
+public class PokerJudgement implements Comparable<PokerJudgement> {
 
 	private PokerSeries series;
 
@@ -95,9 +95,15 @@ public class PokerJudgement {
 					return false;
 				}
 
+				boolean isLastCard = idx == cards.size() - 1;
 				// 是否是下一張
 				if (!pRank.equals(curRank.getNexRank())) {
-					return false;
+					// 檢查是否是ACE開頭的順
+					if (isLastCard) {
+						return isMaxStraight(cards);
+					} else {
+						return false;
+					}
 				} else {
 					curRank = pRank;
 				}
@@ -107,6 +113,37 @@ public class PokerJudgement {
 		// 反序加入大小牌
 		for (int idx = cards.size() - 1; idx >= 0; idx--) {
 			orderCards.add(cards.get(idx));
+		}
+
+		return true;
+	}
+
+	private boolean isMaxStraight(ArrayList<PokerCard> cards) {
+		ArrayList<PokerCard> numOrderCards = new ArrayList<>(cards);
+		Collections.sort(numOrderCards, PokerCard.getStraightOrder());
+
+		PokerRank curRank = null;
+		for (int idx = 0; idx < numOrderCards.size(); idx++) {
+			PokerCard card = numOrderCards.get(idx);
+			PokerRank rank = card.getRank();
+			if (idx == 0) {
+				if (rank.equals(PokerRank.ACE)) {
+					curRank = rank;
+				} else {
+					orderCards.clear();
+					return false;
+				}
+			} else {
+				// 是否是下一張
+				if (!rank.equals(curRank.getNexRank())) {
+					orderCards.clear();
+					return false;
+				} else {
+					curRank = rank;
+				}
+			}
+			// 加入順序牌
+			orderCards.add(card);
 		}
 
 		return true;
@@ -254,6 +291,39 @@ public class PokerJudgement {
 			orderCards.add(cards.get(idx));
 		}
 		return true;
+	}
+
+	/**
+	 * 比較牌型大小
+	 */
+	@Override
+	public int compareTo(PokerJudgement o) {
+		if (o == null) {
+			return 1;
+		}
+
+		int seriesOrder = series.compare(o.series);
+		// 同牌型，比較牌序
+		if (seriesOrder == 0) {
+			int cardSize1 = orderCards.size();
+			int cardSize2 = o.orderCards.size();
+			int idx = 0;
+			while (idx < cardSize1 && idx < cardSize2) {
+				PokerCard card1 = orderCards.get(idx);
+				PokerCard card2 = o.orderCards.get(idx);
+				int cardOrder = card1.compareTo(card2);
+				if(cardOrder != 0) {
+					return cardOrder;
+				}
+				idx++;
+			}
+		}
+		else {
+			return seriesOrder;
+		}
+		
+		// 其實應該沒有牌型比較不出大小的結果
+		return 0;
 	}
 
 }

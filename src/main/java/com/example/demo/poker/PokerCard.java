@@ -1,5 +1,7 @@
 package com.example.demo.poker;
 
+import java.util.Comparator;
+
 /**
  * 撲克牌
  */
@@ -35,6 +37,9 @@ public class PokerCard implements Comparable<PokerCard> {
 		this.rank = rank;
 	}
 
+	/**
+	 * 預設的排序方式
+	 */
 	@Override
 	public int compareTo(PokerCard o) {
 		if (suit != null && rank != null) {
@@ -50,4 +55,25 @@ public class PokerCard implements Comparable<PokerCard> {
 		return 0;
 	}
 
+	/**
+	 * 以數字為順序的排序方式
+	 */
+	public static Comparator<PokerCard> getStraightOrder(){
+		return new Comparator<PokerCard>() {
+			@Override
+			public int compare(PokerCard o1, PokerCard o2) {
+				if(o1 != null && o2 != null) {
+					// 先比數字
+					int cRank = o1.rank.compareNumber(o2.rank);
+					if (cRank == 0) {
+						// 數字相同，比較花色
+						return o1.suit.compare(o2.suit);
+					} else {
+						return cRank;
+					}
+				}
+				return 0;
+			}
+		};
+	}
 }

@@ -38,6 +38,9 @@ public enum PokerSeries {
 		this.order = order;
 	}
 
+	/**
+	 * 比較牌型大小
+	 */
 	public int compare(PokerSeries series) {
 		if (series != null) {
 			return -1 * Integer.compare(order, series.order);

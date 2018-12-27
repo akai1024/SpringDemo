@@ -5,7 +5,7 @@ package com.example.demo.poker;
  */
 public enum PokerRank {
 
-	A(0, 1),
+	ACE(0, 1),
 	II(12, 2),
 	III(11, 3),
 	IV(10, 4),
@@ -27,6 +27,9 @@ public enum PokerRank {
 		this.number = number;
 	}
 
+	/**
+	 * 以牌面意義大小牌序
+	 */
 	public int compareOrder(PokerRank pokerRank) {
 		if (pokerRank == null) {
 			return 0;
@@ -41,6 +44,9 @@ public enum PokerRank {
 		return 0;
 	}
 
+	/**
+	 * 以牌面數字大小牌序
+	 */
 	public int compareNumber(PokerRank pokerRank) {
 		if (pokerRank == null) {
 			return 0;
@@ -57,9 +63,12 @@ public enum PokerRank {
 		return number;
 	}
 
+	/**
+	 * 取得下一個rank
+	 */
 	public PokerRank getNexRank() {
 		switch (this) {
-		case A:	return II;
+		case ACE: return II;
 		case II: return III;
 		case III: return IV;
 		case IV: return V;
@@ -71,7 +80,7 @@ public enum PokerRank {
 		case X: return JACK;
 		case JACK: return QUEEN;
 		case QUEEN: return KING;
-		case KING: return A;
+		case KING: return ACE;
 
 		default:
 			return null;
