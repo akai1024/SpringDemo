@@ -17,6 +17,10 @@ public class PokerCardStack {
 	}
 
 	public PokerCardStack(List<PokerCard> pokerCards) {
+		addCards(pokerCards);
+	}
+
+	public void addCards(List<PokerCard> pokerCards) {
 		if (pokerCards != null) {
 			cards.addAll(pokerCards);
 		}
@@ -83,4 +87,14 @@ public class PokerCardStack {
 		return drawCards;
 	}
 
+	public PokerCard get(int index) {
+		if (index >= 0 && index < cards.size()) {
+			return cards.get(index);
+		}
+		return null;
+	}
+
+	public ArrayList<PokerCard> getRestCards() {
+		return new ArrayList<>(cards);
+	}
 }
