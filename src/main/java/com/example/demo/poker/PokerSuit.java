@@ -1,7 +1,8 @@
 package com.example.demo.poker;
 
 /**
- * 撲克牌花色
+ * 撲克牌花色<br>
+ * 註：正統撲克牌是沒有花色大小之分，這邊以台式順序為主
  */
 public enum PokerSuit {
 
