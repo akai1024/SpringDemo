@@ -17,6 +17,9 @@ public abstract class Creature {
 
 	/** 血量 */
 	protected int hp;
+	
+	/** 預設最大血量 */
+	protected int defaultMaxHP;
 
 	/** 物攻 */
 	protected int pPower;
@@ -33,6 +36,10 @@ public abstract class Creature {
 	/** 可使用技能的牌型 */
 	protected ArrayList<Card> skillCards = new ArrayList<>();
 
+	public Creature(Race race) {
+		this.race = race;
+	}
+	
 	/**
 	 * 是否完全符合技能用卡
 	 */
@@ -63,6 +70,8 @@ public abstract class Creature {
 	 * 使用技能
 	 */
 	public abstract void launchSkill(CardLaunch launch);
+	
+	public abstract String toString();
 
 	public Race getRace() {
 		return race;
@@ -78,6 +87,14 @@ public abstract class Creature {
 
 	public void setHp(int hp) {
 		this.hp = hp;
+	}
+
+	public int getDefaultMaxHP() {
+		return defaultMaxHP;
+	}
+
+	public void setDefaultMaxHP(int defaultMaxHP) {
+		this.defaultMaxHP = defaultMaxHP;
 	}
 
 	public int getpPower() {
