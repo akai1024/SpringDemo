@@ -13,7 +13,7 @@ import com.example.demo.player.Player;
 import com.example.demo.shipgame.Combat;
 
 @RestController
-@RequestMapping("shipGame")
+@RequestMapping("/shipGame")
 public class WarshipGameController {
 
 	private static final String CMD_DEPLOY = "D";
