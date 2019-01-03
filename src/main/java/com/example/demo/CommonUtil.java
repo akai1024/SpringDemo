@@ -1,10 +1,16 @@
 package com.example.demo;
 
+import java.lang.reflect.Type;
 import java.util.Calendar;
 import java.util.Date;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 public class CommonUtil {
 
+	private static Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+	
 	/**
 	 * 是否是空字串
 	 */
@@ -45,5 +51,25 @@ public class CommonUtil {
 		sBuilder.append(cal.get(Calendar.SECOND));
 		return sBuilder.toString();
 	}
+	
+	/**
+	 * 轉成json字串
+	 */
+	public static String toJsonStr(Object object) {
+		return gson.toJson(object);
+	}
 
+	/**
+	 * 將json字串轉成指定類
+	 */
+	public static <T> T parseJson(String json, Class<T> clazz) {
+		return gson.fromJson(json, clazz);
+	}
+
+	/**
+	 * 將json字串轉成指定類
+	 */
+	public static <T> T parseJson(String json, Type typeOfT) {
+		return gson.fromJson(json, typeOfT);
+	}
 }
