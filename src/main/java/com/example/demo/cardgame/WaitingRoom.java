@@ -24,14 +24,15 @@ public class WaitingRoom {
 		}
 	}
 
-	public void addGuests(ArrayList<Player> players) {
+	public boolean addGuests(ArrayList<Player> players) {
 		if(guests.size() + players.size() > teamMembers) {
-			return;
+			return false;
 		}
 		
 		for (Player player : players) {
 			addGuest(player);
 		}
+		return true;
 	}
 	
 	public boolean isFullMembers() {
