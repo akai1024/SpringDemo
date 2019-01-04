@@ -10,10 +10,13 @@ import com.example.demo.datasource.repo.CounterRepo;
 
 public class TXSomeImpl implements TransactionCallback<Integer> {
 
+	private int id;
+	
 	private CounterRepo counterRepo;
 
-	public TXSomeImpl(CounterRepo counterRepo) {
+	public TXSomeImpl(CounterRepo counterRepo, int id) {
 		this.counterRepo = counterRepo;
+		this.id = id;
 	}
 
 	@Override
@@ -21,7 +24,7 @@ public class TXSomeImpl implements TransactionCallback<Integer> {
 		int count = 0;
 		try {
 			
-			Optional<CounterModel> opModel = counterRepo.findByIdForUpdate(1);
+			Optional<CounterModel> opModel = counterRepo.findByIdForUpdate(id);
 			CounterModel model = opModel.isPresent() ? opModel.get() : new CounterModel();
 			count = model.getCounter() + 1;
 			model.setCounter(count);

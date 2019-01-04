@@ -1,18 +1,10 @@
 package com.example.demo.controller;
 
 import java.util.Optional;
-import java.util.Random;
-
-import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.datasource.model.CounterModel;
@@ -56,8 +48,8 @@ public class CounterController {
 	}
 	
 	@RequestMapping("/addAndGet5")
-	public int addAndGet5() throws Exception {
-		return txCounter.someImpl();
+	public int addAndGet5(@RequestParam("id") int id) throws Exception {
+		return txCounter.someImpl(id);
 	}
 	
 }
