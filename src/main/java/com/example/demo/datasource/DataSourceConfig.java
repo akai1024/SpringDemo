@@ -16,7 +16,9 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.example.demo.datasource.model.CounterModel;
 import com.example.demo.datasource.model.CreatureModel;
+import com.example.demo.datasource.model.KLogModel;
 import com.example.demo.datasource.model.PlayerModel;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -103,6 +105,11 @@ public class DataSourceConfig {
 		// 生物設定
 		builder.packages(CreatureModel.class);
 		
+		// 測試併發計數器
+		builder.packages(CounterModel.class);
+		
+		// 測試用log
+		builder.packages(KLogModel.class);
 		
 		return builder;
 	}
