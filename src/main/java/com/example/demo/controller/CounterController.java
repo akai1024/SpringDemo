@@ -55,4 +55,9 @@ public class CounterController {
 		return txCounter.addAndGetByRepo();
 	}
 	
+	@RequestMapping("/addAndGet5")
+	public int addAndGet5() throws Exception {
+		return txCounter.someImpl();
+	}
+	
 }

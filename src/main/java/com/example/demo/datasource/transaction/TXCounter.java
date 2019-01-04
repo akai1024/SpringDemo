@@ -154,6 +154,13 @@ public class TXCounter {
 		});
 	}
 	
+	/**
+	 * 以某個class實作TransactionCallback
+	 */
+	public int someImpl() {
+		return transactionTemplate.execute(new TXSomeImpl(counterRepo));
+	}
+	
 	
 	/**
 	 * 隨機製造exception
