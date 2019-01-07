@@ -40,8 +40,7 @@ public class TXCounter {
 	/** 完成交易必要的執行器 */
 	private TransactionTemplate transactionTemplate;
 	
-	
-	
+
 	// 方案一：運用JdbcTemplate執行query
 	private JdbcTemplate jdbcTemplate;
 
@@ -50,10 +49,9 @@ public class TXCounter {
 	// 方案二：運用repository執行query
 	@Autowired
 	private CounterRepo counterRepo;
-	
+
 	@Autowired
 	private KLogRepo kLogRepo;
-	
 
 	/**
 	 * 利用postContruct避免datasource尚未實例化完成
@@ -62,7 +60,29 @@ public class TXCounter {
 	public void initial() {
 		jdbcTemplate = new JdbcTemplate(datasource);
 		transactionTemplate = new TransactionTemplate(txManager);
+
+		/**
+		 * 事務隔離級別
+		 * TransactionDefinition.ISOLATION_DEFAULT：這是默認值，表示使用底層數據庫的默認隔離級別。對大部分數據庫而言，通常這值就是TransactionDefinition.ISOLATION_READ_COMMITTED。
+		 * TransactionDefinition.ISOLATION_READ_UNCOMMITTED：該隔離級別表示一個事務可以讀取另一個事務修改但還沒有提交的數據。該級別不能防止臟讀和不可重複讀，因此很少使用該隔離級別。
+		 * TransactionDefinition.ISOLATION_READ_COMMITTED：該隔離級別表示一個事務只能讀取另一個事務已經提交的數據。該級別可以防止臟讀，這也是大多數情況下的推薦值。
+		 * TransactionDefinition.ISOLATION_REPEATABLE_READ：該隔離級別表示一個事務在整個過程中可以多次重複執行某個查詢，並且每次返回的記錄都相同。即使在多次查詢之間有新增的數據滿足該查詢，這些新增的記錄也會被忽略。該級別可以防止臟讀和不可重複讀。
+		 * TransactionDefinition.ISOLATION_SERIALIZABLE：所有的事務依次逐個執行，這樣事務之間就完全不可能產生干擾，也就是說，該級別可以防止臟讀、不可重複讀以及幻讀。但是這將嚴重影響程序的性能。通常情況下也不會用到該級別。
+		 */
 		transactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);
+
+		/**
+		 * 事務傳播行為
+		 * TransactionDefinition.PROPAGATION_REQUIRED：如果當前存在事務，則加入該事務；如果當前沒有事務，則創建一個新的事務。
+		 * TransactionDefinition.PROPAGATION_REQUIRES_NEW：創建一個新的事務，如果當前存在事務，則把當前事務掛起。
+		 * TransactionDefinition.PROPAGATION_SUPPORTS：如果當前存在事務，則加入該事務；如果當前沒有事務，則以非事務的方式繼續運行。
+		 * TransactionDefinition.PROPAGATION_NOT_SUPPORTED：以非事務方式運行，如果當前存在事務，則把當前事務掛起。
+		 * TransactionDefinition.PROPAGATION_NEVER：以非事務方式運行，如果當前存在事務，則拋出異常。
+		 * TransactionDefinition.PROPAGATION_MANDATORY：如果當前存在事務，則加入該事務；如果當前沒有事務，則拋出異常。
+		 * TransactionDefinition.PROPAGATION_NESTED：如果當前存在事務，則創建一個事務作為當前事務的嵌套事務來運行；如果當前沒有事務，則該取值等價於TransactionDefinition.PROPAGATION_REQUIRED。
+		 */
+		transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+
 	}
 
 	/**
@@ -126,21 +146,21 @@ public class TXCounter {
 			public Integer doInTransaction(TransactionStatus status) {
 				int count = 0;
 				try {
-					
+
 //					Optional<CounterModel> opModel = counterRepo.findById(1);
 					Optional<CounterModel> opModel = counterRepo.findByIdForUpdate(1);
 					CounterModel model = opModel.isPresent() ? opModel.get() : new CounterModel();
 					count = model.getCounter() + 1;
 					model.setCounter(count);
 					counterRepo.save(model);
-					
+
 					// 運用repo寫一行紀錄
 					KLogModel logModel = new KLogModel();
 					logModel.setCounter(count);
 					logModel.setkMessage("success");
 					logModel.setEventDate(new Date());
 					kLogRepo.save(logModel);
-					
+
 					randomException();
 
 				} catch (Exception e) {
@@ -153,15 +173,14 @@ public class TXCounter {
 			}
 		});
 	}
-	
+
 	/**
 	 * 以某個class實作TransactionCallback
 	 */
 	public int someImpl(int id) {
 		return transactionTemplate.execute(new TXSomeImpl(counterRepo, id));
 	}
-	
-	
+
 	/**
 	 * 隨機製造exception
 	 */
